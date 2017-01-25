@@ -2,13 +2,14 @@
 
 namespace DigipolisGent\Robo\Task\Package\Drupal8;
 
-use DigipolisGent\Robo\Task\Package\ThemeCompile;
-use Robo\Task\Base\ParallelExec;
+use Robo\Contract\BuilderAwareInterface;
+use Robo\Task\BaseTask;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Process;
 
-class ThemesCompileDrupal8 extends ParallelExec
+class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
 {
+    use \Robo\TaskAccessor;
+    use \DigipolisGent\Robo\Task\Package\loadTasks;
 
     /**
      * An associative array where the keys are the Drupal theme machine names
@@ -36,9 +37,8 @@ class ThemesCompileDrupal8 extends ParallelExec
      * Creates a new ThemesCompileDrupal8 task.
      *
      * @param array $themes
-     *   An associative array where the keys are the Drupal theme machine names
-     *   and the values are the respective Grunt/Gulp commands to execute.
-     *   Defaults to the digipolis.themes.drupal8 config value.
+     *   An array of Drupal theme machine names. Defaults to the keys of the
+     *   digipolis.themes.drupal8 config value.
      * @param array $dirs
      *   The directories in which to search for the themes. Defaults to the
      *   digipolis.root.project and digipolis.root.web config values, or the
@@ -52,12 +52,11 @@ class ThemesCompileDrupal8 extends ParallelExec
     }
 
     /**
-     * Sets the themes to compile.
+     * Sets the themes to clean.
      *
      * @param array $themes
-     *   An associative array where the keys are the Drupal theme machine names
-     *   and the values are the respective Grunt/Gulp commands to execute.
-     *   Defaults to the digipolis.themes.drupal8 config value.
+     *   An array of Drupal theme machine names. Defaults to the keys of the
+     *   digipolis.themes.drupal8 config value.
      */
     public function themes($themes)
     {
@@ -96,11 +95,21 @@ class ThemesCompileDrupal8 extends ParallelExec
      */
     public function run()
     {
+        $themesFromConfig = $this->getConfig()->get('digipolis.themes.drupal8', false);
+        if ($themesFromConfig) {
+          $themesFromConfig = array_keys((array) $themesFromConfig);
+        }
         $themes = empty($this->themes)
-            ? $this->getConfig()->get('digipolis.themes.drupal8', false)
+            ? $themesFromConfig
             : $this->themes;
+        $dirsFromConfig = array_filter(
+            [
+                $this->getConfig()->get('digipolis.root.project', false),
+                $this->getConfig()->get('digipolis.root.web', false),
+            ]
+        );
         $dirs = empty($this->dirs)
-            ? array_filter([$this->getConfig()->get('digipolis.root.project', false), $this->getConfig()->get('digipolis.root.web')])
+            ? $dirsFromConfig
             : $this->dirs;
         if (empty($dirs)) {
             $dirs = [getcwd()];
@@ -108,22 +117,22 @@ class ThemesCompileDrupal8 extends ParallelExec
 
         $finder = clone $this->finder;
         $finder->in($dirs)->files();
-        foreach (array_keys($themes) as $themeName) {
+        foreach ($themes as $themeName) {
             // Matches 'themes/(custom/){randomfoldername}/{themename}.info.yml'.
             $finder->path('/themes\/(custom\/)?[^\/]*\/' . preg_quote($themeName, '/') . '\.info\.yml/');
         }
+        $processed = [];
+        $collection = $this->collectionBuilder();
         foreach ($finder as $infoFile) {
             $path = dirname($infoFile->getRealPath());
-            $theme = $infoFile->getBasename('.info.yml');
-            $command = $themes[$theme];
-            $this->processes[] = new Process(
-                $this->receiveCommand(new ThemeCompile($path, $command)),
-                $path,
-                null,
-                null,
-                null
-            );
+            // The web dir can be a subdir of the project root (in most cases
+            // really). Make sure we don't clean the same theme twice.
+            if (isset($processed[$path])) {
+              continue;
+            }
+            $processed[$path] = TRUE;
+            $collection->addTask($this->taskThemeClean($path));
         }
-        return parent::run();
+        return $collection->run();
     }
 }
