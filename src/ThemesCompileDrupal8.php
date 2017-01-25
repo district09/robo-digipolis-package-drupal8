@@ -50,7 +50,6 @@ class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
         $this->themes = $themes;
         $this->dirs = $dirs;
         $this->finder = new Finder();
-
     }
 
     /**
@@ -127,9 +126,9 @@ class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
             // The web dir can be a subdir of the project root (in most cases
             // really). Make sure we don't compile the same theme twice.
             if (isset($processed[$path])) {
-              continue;
+                continue;
             }
-            $processed[$path] = TRUE;
+            $processed[$path] = true;
             $theme = $infoFile->getBasename('.info.yml');
             $command = $themes[$theme];
             $collection->addTask($this->taskThemeCompile($path, $command));

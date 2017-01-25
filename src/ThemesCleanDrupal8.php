@@ -97,7 +97,7 @@ class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
     {
         $themesFromConfig = $this->getConfig()->get('digipolis.themes.drupal8', false);
         if ($themesFromConfig) {
-          $themesFromConfig = array_keys((array) $themesFromConfig);
+            $themesFromConfig = array_keys((array) $themesFromConfig);
         }
         $themes = empty($this->themes)
             ? $themesFromConfig
@@ -128,9 +128,9 @@ class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
             // The web dir can be a subdir of the project root (in most cases
             // really). Make sure we don't clean the same theme twice.
             if (isset($processed[$path])) {
-              continue;
+                continue;
             }
-            $processed[$path] = TRUE;
+            $processed[$path] = true;
             $collection->addTask($this->taskThemeClean($path));
         }
         return $collection->run();
