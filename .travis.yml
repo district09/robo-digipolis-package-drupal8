@@ -9,8 +9,8 @@ install:
   - composer install --dev
 script:
   - vendor/bin/robo test:coverage-codeclimate
-#addons:
-#  code_climate:
-#    repo_token: e091e028f8091a949f82929ebdc4de18ba54e140c28c17d443b8857525a731ac
-#after_success:
-#  - vendor/bin/test-reporter
+addons:
+  code_climate:
+    repo_token: dceafa85fb070b04ca22d552779098a345d69c9161545ce45cf4d34c0eb2c429
+after_success:
+  - vendor/bin/test-reporter
