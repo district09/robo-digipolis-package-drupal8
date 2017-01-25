@@ -47,8 +47,8 @@ class PackageDrupal8 extends PackageProject
         }
         $dirs = [];
         foreach ($finder as $file) {
-          $relative = substr($file->getRealPath(), strlen($dir) + 1);
-          $dirs[$relative] = $file->getRealPath();
+            $relative = substr($file->getRealPath(), strlen($dir) + 1);
+            $dirs[$relative] = $file->getRealPath();
         }
         return $dirs;
     }
