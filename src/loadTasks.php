@@ -6,5 +6,5 @@ trait loadTasks
 {
     use Traits\PackageDrupal8Trait;
     use Traits\ThemesCompileDrupal8Trait;
-    use Traits\ThemesCompileDrupal8Trait;
+    use Traits\ThemesCleanDrupal8Trait;
 }
