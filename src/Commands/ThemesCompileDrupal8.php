@@ -8,6 +8,9 @@ trait ThemesCompileDrupal8
 
     public function digipolisThemesCompileDrupal8($themes = '', $dirs = '')
     {
+        if (is_callable([$this, 'readProperties'])) {
+            $this->readProperties();
+        }
         $themesWithCommand = [];
         foreach (explode(',', $themes) as $theme) {
             $parts = explode(':', $theme);
