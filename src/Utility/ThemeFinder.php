@@ -2,7 +2,8 @@
 
 namespace DigipolisGent\Robo\Task\Package\Drupal8\Utility;
 
-trait ThemeFinder {
+trait ThemeFinder
+{
 
     /**
      * Get the theme paths.

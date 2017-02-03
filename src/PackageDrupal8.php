@@ -58,12 +58,12 @@ class PackageDrupal8 extends PackageProject
         foreach ($finder as $file) {
             $realPath = $file->getRealPath();
             if (is_dir($realPath)) {
-              $subDirFinder = clone $finderClone;
-              // This is a directory that contains files that will be added. So
-              // don't add the directory or files will be added twice.
-              if ($subDirFinder->in($realPath)->files()->count()) {
-                continue;
-              }
+                $subDirFinder = clone $finderClone;
+                // This is a directory that contains files that will be added.
+                // So don't add the directory or files will be added twice.
+                if ($subDirFinder->in($realPath)->files()->count()) {
+                    continue;
+                }
             }
 
             $relative = substr($realPath, strlen($dir) + 1);
