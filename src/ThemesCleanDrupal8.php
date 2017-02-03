@@ -10,6 +10,7 @@ class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
 {
     use \Robo\TaskAccessor;
     use \DigipolisGent\Robo\Task\Package\loadTasks;
+    use Utility\ThemeFinder;
 
     /**
      * An associative array where the keys are the Drupal theme machine names
@@ -102,35 +103,9 @@ class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
         $themes = empty($this->themes)
             ? $themesFromConfig
             : $this->themes;
-        $dirsFromConfig = array_filter(
-            [
-                $this->getConfig()->get('digipolis.root.project', false),
-                $this->getConfig()->get('digipolis.root.web', false),
-            ]
-        );
-        $dirs = empty($this->dirs)
-            ? $dirsFromConfig
-            : $this->dirs;
-        if (empty($dirs)) {
-            $dirs = [getcwd()];
-        }
 
-        $finder = clone $this->finder;
-        $finder->in($dirs)->files();
-        foreach ($themes as $themeName) {
-            // Matches 'themes/(custom/){randomfoldername}/{themename}.info.yml'.
-            $finder->path('/themes\/(custom\/)?[^\/]*\/' . preg_quote($themeName, '/') . '\.info\.yml/');
-        }
-        $processed = [];
         $collection = $this->collectionBuilder();
-        foreach ($finder as $infoFile) {
-            $path = dirname($infoFile->getRealPath());
-            // The web dir can be a subdir of the project root (in most cases
-            // really). Make sure we don't clean the same theme twice.
-            if (isset($processed[$path])) {
-                continue;
-            }
-            $processed[$path] = true;
+        foreach ($this->getThemePaths($themes) as $path) {
             $collection->addTask($this->taskThemeClean($path));
         }
         return $collection->run();

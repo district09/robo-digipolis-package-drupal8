@@ -17,6 +17,14 @@ class PackageDrupal8 extends PackageProject
         'README',
         'README.txt',
         'README.md',
+        'CHANGELOG.txt',
+        'COPYRIGHT.txt',
+        'INSTALL.mysql.txt',
+        'INSTALL.pgsql.txt',
+        'INSTALL.sqlite.txt',
+        'INSTALL.txt',
+        'MAINTAINERS.txt',
+        'UPDATE.txt',
     ];
 
     /**
@@ -32,11 +40,6 @@ class PackageDrupal8 extends PackageProject
                 : $projectRoot;
         }
         $finder = new Finder();
-        $finder->in([
-            $dir . '/vendor',
-            $dir . '/web',
-            $dir . '/config',
-        ]);
         $finder->ignoreDotFiles(false);
         // Ignore dotfiles except .htaccess.
         $finder->notPath('/(^|\/)\.(?!(htaccess$)).+(\/|$)/');
@@ -46,9 +49,25 @@ class PackageDrupal8 extends PackageProject
             $finder->notName($fileName);
         }
         $dirs = [];
+        $finderClone = clone $finder;
+        $finder->in([
+            $dir . '/vendor',
+            $dir . '/web',
+            $dir . '/config',
+        ]);
         foreach ($finder as $file) {
-            $relative = substr($file->getRealPath(), strlen($dir) + 1);
-            $dirs[$relative] = $file->getRealPath();
+            $realPath = $file->getRealPath();
+            if (is_dir($realPath)) {
+              $subDirFinder = clone $finderClone;
+              // This is a directory that contains files that will be added. So
+              // don't add the directory or files will be added twice.
+              if ($subDirFinder->in($realPath)->files()->count()) {
+                continue;
+              }
+            }
+
+            $relative = substr($realPath, strlen($dir) + 1);
+            $dirs[$relative] = $realPath;
         }
         return $dirs;
     }

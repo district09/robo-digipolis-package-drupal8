@@ -20,6 +20,8 @@ class ThemesCompileDrupal8Test extends \PHPUnit_Framework_TestCase implements Co
     use \Robo\Task\Base\loadTasks;
     use \Robo\Common\ConfigAwareTrait;
 
+    protected $themePaths;
+
     /**
      * Set up the Robo container so that we can create tasks in our tests.
      */
@@ -28,6 +30,25 @@ class ThemesCompileDrupal8Test extends \PHPUnit_Framework_TestCase implements Co
         $container = Robo::createDefaultContainer(null, new NullOutput());
         $this->setContainer($container);
         $this->setConfig(Robo::config());
+        $this->themePaths = [
+            realpath(__DIR__ . '/../testfiles/themes/testtheme'),
+            realpath(__DIR__ . '/../testfiles/themes/custom/customtheme'),
+        ];
+    }
+
+    public function tearDown()
+    {
+        foreach ($this->themePaths as $themePath) {
+            // Manual cleanup.
+            $files = [
+                '/hello_grunt.txt',
+                '/node_modules',
+                '/vendor',
+            ];
+            foreach ($files as $remove) {
+                exec('rm -rf ' . $themePath . $remove);
+            }
+        }
     }
 
     /**
@@ -58,26 +79,12 @@ class ThemesCompileDrupal8Test extends \PHPUnit_Framework_TestCase implements Co
         $this->assertEquals('', $result->getMessage());
         $this->assertEquals(0, $result->getExitCode());
 
-        $themePaths = [
-            realpath(__DIR__ . '/../testfiles/themes/testtheme'),
-            realpath(__DIR__ . '/../testfiles/themes/custom/customtheme'),
-        ];
-        foreach ($themePaths as $themePath) {
-
+        foreach ($this->themePaths as $themePath) {
+            // Assert node ran.
             $this->assertFileExists($themePath . '/node_modules');
 
             // Assert grunt build ran.
             $this->assertFileExists($themePath . '/hello_grunt.txt');
-
-            // Manual cleanup.
-            $files = [
-                '/hello_grunt.txt',
-                '/node_modules',
-                '/vendor',
-            ];
-            foreach ($files as $remove) {
-                exec('rm -rf ' . $themePath . $remove);
-            }
         }
     }
 }

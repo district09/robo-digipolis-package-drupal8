@@ -10,6 +10,7 @@ class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
 {
     use \Robo\TaskAccessor;
     use \DigipolisGent\Robo\Task\Package\loadTasks;
+    use Utility\ThemeFinder;
 
     /**
      * An associative array where the keys are the Drupal theme machine names
@@ -100,37 +101,9 @@ class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
         $themes = empty($this->themes)
             ? $this->getConfig()->get('digipolis.themes.drupal8', false)
             : $this->themes;
-        $dirsFromConfig = array_filter(
-            [
-                $this->getConfig()->get('digipolis.root.project', false),
-                $this->getConfig()->get('digipolis.root.web', false),
-            ]
-        );
-        $dirs = empty($this->dirs)
-            ? $dirsFromConfig
-            : $this->dirs;
-        if (empty($dirs)) {
-            $dirs = [getcwd()];
-        }
-
-        $finder = clone $this->finder;
-        $finder->in($dirs)->files();
-        foreach (array_keys($themes) as $themeName) {
-            // Matches 'themes/(custom/){randomfoldername}/{themename}.info.yml'.
-            $finder->path('/themes\/(custom\/)?[^\/]*\/' . preg_quote($themeName, '/') . '\.info\.yml/');
-        }
-        $processed = [];
         $collection = $this->collectionBuilder();
-        foreach ($finder as $infoFile) {
-            $path = dirname($infoFile->getRealPath());
-            // The web dir can be a subdir of the project root (in most cases
-            // really). Make sure we don't compile the same theme twice.
-            if (isset($processed[$path])) {
-                continue;
-            }
-            $processed[$path] = true;
-            $theme = $infoFile->getBasename('.info.yml');
-            $command = $themes[$theme];
+        foreach ($this->getThemePaths(array_keys($themes)) as $themeName => $path) {
+            $command = $themes[$themeName];
             $collection->addTask($this->taskThemeCompile($path, $command));
         }
         return $collection->run();
