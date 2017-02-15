@@ -12,3 +12,74 @@ Drupal 8 Packaging/Compile tasks for Robo Task Runner
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/7520a070-4500-494e-80c8-e0b109fb3db6/mini.png)](https://insight.sensiolabs.com/projects/7520a070-4500-494e-80c8-e0b109fb3db6)
 [![Code Climate](https://codeclimate.com/github/digipolisgent/robo-digipolis-package-drupal8/badges/gpa.svg)](https://codeclimate.com/github/digipolisgent/robo-digipolis-package-drupal8)
 [![Test Coverage](https://codeclimate.com/github/digipolisgent/robo-digipolis-package-drupal8/badges/coverage.svg)](https://codeclimate.com/github/digipolisgent/robo-digipolis-package-drupal8/coverage)
+
+## Commands
+
+This package provides default commands wich you can use in your `RoboFile.php`
+like so:
+
+```php
+class RoboFile extends \Robo\Tasks
+{
+    use \DigipolisGent\Robo\Task\Package\Drupal8\Commands\loadCommands;
+}
+```
+
+### digipolis:package-project
+
+`vendor/bin/robo digipolis:package-drupal8 FILE [DIR] [OPTIONS]`
+
+#### Arguments
+
+##### FILE
+
+The name of the archive file that will be created.
+
+##### DIR
+
+The directory to package. Defaults to the config value `digipolis.root.project`
+if it is set (see <https://github.com/digipolisgent/robo-digipolis-general> for
+more information), or the current working directory otherwise.
+
+#### Options
+
+##### --ignore, -i
+
+Comma separated list of filenames to ignore, has sensible defaults for Drupal 8
+projects
+
+### digipolis:themes-clean-drupal8
+
+`vendor/bin/robo digipolis:themes-clean-drupal8 [THEMES] [DIRS]`
+
+#### Arguments
+
+##### THEMES
+
+Comma-seperated list of Drupal theme machine names. Defaults to the keys of the
+digipolis.themes.drupal8 config value.
+
+##### DIRS
+
+Comma-seperated list of directories in which to search for the themes. Defaults
+to the digipolis.root.project and digipolis.root.web config values, or the
+current working directory if that is not set.
+
+### digipolis:themes-compile-drupal8
+
+`vendor/bin/robo digipolis:themes-compile-drupal8 [THEMES] [DIRS]`
+
+#### Arguments
+
+##### THEMES
+
+Comma-seperated list of Drupal theme machine names, or comma separated list in
+the format `themename:command` where `themename` is the name of the theme to
+compile and `command` is the name of the grunt/gulp command to execute (defaults
+to `compile`). Defaults to the digipolis.themes.drupal8 config value.
+
+##### DIRS
+
+Comma-seperated list of directories in which to search for the themes. Defaults
+to the digipolis.root.project and digipolis.root.web config values, or the
+current working directory if that is not set.
