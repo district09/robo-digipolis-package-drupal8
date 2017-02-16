@@ -30,45 +30,33 @@ class PackageDrupal8 extends PackageProject
     /**
      * {@inheritdoc}
      */
-    protected function getFiles()
+    protected function cleanMirrorDir()
     {
-        $dir = $this->dir;
-        if (is_null($dir)) {
-            $projectRoot = $this->getConfig()->get('digipolis.root.project', null);
-            $dir = is_null($projectRoot)
-                ? getcwd()
-                : $projectRoot;
-        }
-        $finder = new Finder();
-        $finder->ignoreDotFiles(false);
-        // Ignore dotfiles except .htaccess.
-        $finder->notPath('/(^|\/)\.(?!(htaccess$)).+(\/|$)/');
+        // Only keep web, vendor and config folder.
+        $folders = new Finder();
+        $folders->in($this->tmpDir);
+        $folders->depth(0);
+        $folders->notPath('/^(web|vendor|config)$/');
+        $this->fs->remove($folders);
 
-        // Ignore other files defined by the dev.
+        if (empty($this->ignoreFileNames)) {
+            return;
+        }
+        $files = new Finder();
+        $files->in($this->tmpDir);
+        $files->ignoreDotFiles(false);
+        $files->files();
+
+        $dotfiles = clone $files;
+
+        // Ignore files defined by the dev.
         foreach ($this->ignoreFileNames as $fileName) {
-            $finder->notName($fileName);
+            $files->name($fileName);
         }
-        $dirs = [];
-        $finderClone = clone $finder;
-        $finder->in([
-            $dir . '/vendor',
-            $dir . '/web',
-            $dir . '/config',
-        ]);
-        foreach ($finder as $file) {
-            $realPath = $file->getRealPath();
-            if (is_dir($realPath)) {
-                $subDirFinder = clone $finderClone;
-                // This is a directory that contains files that will be added.
-                // So don't add the directory or files will be added twice.
-                if ($subDirFinder->in($realPath)->files()->count()) {
-                    continue;
-                }
-            }
+        $this->fs->remove($files);
 
-            $relative = substr($realPath, strlen($dir) + 1);
-            $dirs[$relative] = $realPath;
-        }
-        return $dirs;
+        // Remove dotfiles except .htaccess.
+        $dotfiles->path('/(^|\/)\.(?!(htaccess$)).+(\/|$)/');
+        $this->fs->remove($dotfiles);
     }
 }
