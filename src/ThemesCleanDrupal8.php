@@ -103,7 +103,9 @@ class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
         $themes = empty($this->themes)
             ? $themesFromConfig
             : $this->themes;
-
+        if (!$themes) {
+            return \Robo\Result::success($this);
+        }
         $collection = $this->collectionBuilder();
         foreach ($this->getThemePaths($themes) as $path) {
             $collection->addTask($this->taskThemeClean($path));
