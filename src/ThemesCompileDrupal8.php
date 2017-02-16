@@ -101,6 +101,9 @@ class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
         $themes = empty($this->themes)
             ? $this->getConfig()->get('digipolis.themes.drupal8', false)
             : $this->themes;
+        if (!$themes) {
+            return \Robo\Result::success($this);
+        }
         $collection = $this->collectionBuilder();
         foreach ($this->getThemePaths(array_keys($themes)) as $themeName => $path) {
             $command = $themes[$themeName];
