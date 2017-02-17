@@ -45,9 +45,10 @@ class PackageDrupal8 extends PackageProject
         $files = new Finder();
         $files->in($this->tmpDir);
         $files->ignoreDotFiles(false);
-        $files->files();
 
         $dotfiles = clone $files;
+
+        $files->files();
 
         // Ignore files defined by the dev.
         foreach ($this->ignoreFileNames as $fileName) {
