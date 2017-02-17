@@ -37,6 +37,7 @@ class PackageDrupal8 extends PackageProject
         $folders->in($this->tmpDir);
         $folders->depth(0);
         $folders->notPath('/^(web|vendor|config)$/');
+        $folders->ignoreDotFiles(false);
         $this->fs->remove($folders);
 
         if (empty($this->ignoreFileNames)) {
