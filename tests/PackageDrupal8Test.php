@@ -55,7 +55,7 @@ class PackageDrupal8Test extends \PHPUnit_Framework_TestCase implements Containe
     {
         $projectPath = realpath(__DIR__ . '/../testfiles');
         $this->getConfig()->set('digipolis.root.project', $projectPath);
-        $result = $this->taskPackageDrupal8($this->tarname)->run();
+        $result = $this->taskPackageDrupal8($this->tarname)->useTmpDir()->run();
 
         // Assert response.
         $this->assertEquals('', $result->getMessage());
@@ -72,6 +72,7 @@ class PackageDrupal8Test extends \PHPUnit_Framework_TestCase implements Containe
         }
         $expected = [
             'config/config.yml',
+            'vendor/vendorlib',
             'vendor/vendorlib/libfile.php',
             'web/.htaccess',
             'web/index.php',
