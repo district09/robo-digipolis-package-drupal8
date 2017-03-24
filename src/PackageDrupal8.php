@@ -30,8 +30,9 @@ class PackageDrupal8 extends PackageProject
     /**
      * {@inheritdoc}
      */
-    protected function cleanMirrorDir()
+    protected function prepareMirrorDir()
     {
+        $this->printTaskInfo(sprintf('Preparing directory %s.', $this->tmpDir));
         // Only keep web, vendor and config folder.
         $folders = new Finder();
         $folders->in($this->tmpDir);
