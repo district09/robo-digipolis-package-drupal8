@@ -49,6 +49,7 @@ class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements Cont
         $this->getConfig()->set('digipolis.root.project', realpath(__DIR__ . '/../testfiles'));
         $this->getConfig()->set('digipolis.themes.drupal8', [
             'testtheme' => 'build',
+            'testtheme_source' => 'build',
             'custom' => 'build',
         ]);
         $compileResult = $this->taskThemesCompileDrupal8()
@@ -74,5 +75,7 @@ class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements Cont
           $this->assertFileNotExists($themePath . '/node_modules');
         }
 
+        // Assert cleanup of source dir.
+        $this->assertFileNotExists(realpath(__DIR__ . '/../testfiles/themes/testtheme_source') . '/source');
     }
 }
