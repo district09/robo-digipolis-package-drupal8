@@ -107,7 +107,7 @@ class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
         $collection = $this->collectionBuilder();
         foreach ($this->getThemePaths(array_keys($themes)) as $themeName => $path) {
             $themeSettings = isset($themes[$themeName])
-                ? (array) $themes[$themeName]
+                ? $themes[$themeName]
                 : [];
             if (is_string([$themeSettings])) {
                 // Backward compatibility.
