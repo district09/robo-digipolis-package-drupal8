@@ -10,6 +10,7 @@ class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
 {
     use \Robo\TaskAccessor;
     use \DigipolisGent\Robo\Task\Package\loadTasks;
+    use \Robo\Task\Filesystem\loadTasks;
     use Utility\ThemeFinder;
 
     /**
@@ -97,17 +98,33 @@ class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
     public function run()
     {
         $themesFromConfig = $this->getConfig()->get('digipolis.themes.drupal8', false);
+        $themeNamesFromConfig = [];
         if ($themesFromConfig) {
-            $themesFromConfig = array_keys((array) $themesFromConfig);
+            $themeNamesFromConfig = array_keys((array) $themesFromConfig);
         }
         $themes = empty($this->themes)
-            ? $themesFromConfig
+            ? $themeNamesFromConfig
             : $this->themes;
         if (!$themes) {
             return \Robo\Result::success($this);
         }
         $collection = $this->collectionBuilder();
-        foreach ($this->getThemePaths($themes) as $path) {
+        foreach ($this->getThemePaths($themes) as $themeName => $path) {
+            $themeSettings = isset($themesFromConfig[$themeName])
+                ? $themesFromConfig[$themeName]
+                : [];
+            if (is_string($themeSettings)) {
+                // Backward compatibility.
+                $themeSettings = ['command' => $themeSettings];
+            }
+            $themeSettings = array_merge(
+                ['command' => 'build', 'sourcedir' => 'source'],
+                $themeSettings
+            );
+            if ($themeSettings['sourcedir'] && is_dir($path . '/' . $themeSettings['sourcedir'])) {
+                $collection->addTask($this->taskDeleteDir([$path . '/' . $themeSettings['sourcedir']]));
+                continue;
+            }
             $collection->addTask($this->taskThemeClean($path));
         }
         return $collection->run();
