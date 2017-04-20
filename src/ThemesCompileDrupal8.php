@@ -109,7 +109,7 @@ class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
             $themeSettings = isset($themes[$themeName])
                 ? $themes[$themeName]
                 : [];
-            if (is_string([$themeSettings])) {
+            if (is_string($themeSettings)) {
                 // Backward compatibility.
                 $themeSettings = ['command' => $themeSettings];
             }
