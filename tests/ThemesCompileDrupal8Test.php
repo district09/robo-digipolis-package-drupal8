@@ -21,6 +21,7 @@ class ThemesCompileDrupal8Test extends \PHPUnit_Framework_TestCase implements Co
     use \Robo\Common\ConfigAwareTrait;
 
     protected $themePaths;
+    protected $sourceThemePath;
 
     /**
      * Set up the Robo container so that we can create tasks in our tests.
@@ -34,6 +35,7 @@ class ThemesCompileDrupal8Test extends \PHPUnit_Framework_TestCase implements Co
             realpath(__DIR__ . '/../testfiles/themes/testtheme'),
             realpath(__DIR__ . '/../testfiles/themes/custom/customtheme'),
         ];
+        $this->sourceThemePath = realpath(__DIR__ . '/../testfiles/themes/testtheme_source');
     }
 
     public function tearDown()
@@ -49,6 +51,9 @@ class ThemesCompileDrupal8Test extends \PHPUnit_Framework_TestCase implements Co
                 exec('rm -rf ' . $themePath . $remove);
             }
         }
+        exec('rm -rf ' . $this->sourceThemePath . '/hello_grunt.txt');
+        exec('rm -rf ' . $this->sourceThemePath . '/source/node_modules');
+        exec('rm -rf ' . $this->sourceThemePath . '/source/vendor');
     }
 
     /**
@@ -70,6 +75,7 @@ class ThemesCompileDrupal8Test extends \PHPUnit_Framework_TestCase implements Co
         $this->getConfig()->set('digipolis.root.project', realpath(__DIR__ . '/../testfiles'));
         $this->getConfig()->set('digipolis.themes.drupal8', [
             'testtheme' => 'build',
+            'testtheme_source' => 'build',
             'custom' => 'build',
         ]);
         $result = $this->taskThemesCompileDrupal8()
@@ -86,5 +92,11 @@ class ThemesCompileDrupal8Test extends \PHPUnit_Framework_TestCase implements Co
             // Assert grunt build ran.
             $this->assertFileExists($themePath . '/hello_grunt.txt');
         }
+
+        // Assert node ran.
+        $this->assertFileExists($this->sourceThemePath . '/source/node_modules');
+
+        // Assert grunt build ran.
+        $this->assertFileExists($this->sourceThemePath . '/hello_grunt.txt');
     }
 }
