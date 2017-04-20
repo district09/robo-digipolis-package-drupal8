@@ -113,7 +113,10 @@ class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
                 // Backward compatibility.
                 $themeSettings = ['command' => $themeSettings];
             }
-            $themeSettings += ['command' => 'build', 'sourcedir' => 'source'];
+            $themeSettings = array_merge(
+                ['command' => 'build', 'sourcedir' => 'source'],
+                $themeSettings
+            );
             $collection->addTask(
                 $this->taskThemeCompile(
                     rtrim($path . '/' . $themeSettings['sourcedir'], '/'),

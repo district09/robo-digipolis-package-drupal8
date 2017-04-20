@@ -117,7 +117,10 @@ class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
                 // Backward compatibility.
                 $themeSettings = ['command' => $themeSettings];
             }
-            $themeSettings += ['command' => 'build', 'sourcedir' => 'source'];
+            $themeSettings = array_merge(
+                ['command' => 'build', 'sourcedir' => 'source'],
+                $themeSettings
+            );
             if ($themeSettings['sourcedir'] && is_dir($path . '/' . $themeSettings['sourcedir'])) {
                 $collection->addTask($this->taskDeleteDir([$path . '/' . $themeSettings['sourcedir']]));
                 continue;
