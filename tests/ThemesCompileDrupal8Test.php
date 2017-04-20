@@ -75,7 +75,7 @@ class ThemesCompileDrupal8Test extends \PHPUnit_Framework_TestCase implements Co
         $this->getConfig()->set('digipolis.root.project', realpath(__DIR__ . '/../testfiles'));
         $this->getConfig()->set('digipolis.themes.drupal8', [
             'testtheme' => 'build',
-            'testtheme_custom' => 'build',
+            'testtheme_source' => 'build',
             'custom' => 'build',
         ]);
         $result = $this->taskThemesCompileDrupal8()
