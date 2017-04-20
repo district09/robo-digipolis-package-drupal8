@@ -28,6 +28,16 @@ class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements Cont
         $container = Robo::createDefaultContainer(null, new NullOutput());
         $this->setContainer($container);
         $this->setConfig(Robo::config());
+        // Backup testfiles.
+        $path = realpath(__DIR__ . '/..');
+        exec('cp -r ' . $path . '/testfiles' . ' ' . $path . '/testfiles_backup');
+    }
+
+    public function tearDown() {
+        // Restore testfiles backup.
+        $path = realpath(__DIR__ . '/..');
+        exec('rm -rf ' . $path . '/testfiles');
+        exec('mv ' . $path . '/testfiles_backup' . ' ' . $path . '/testfiles');
     }
 
     /**
