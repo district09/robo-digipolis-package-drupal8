@@ -28,6 +28,16 @@ class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements Cont
         $container = Robo::createDefaultContainer(null, new NullOutput());
         $this->setContainer($container);
         $this->setConfig(Robo::config());
+        // Backup testfiles.
+        $path = realpath(__DIR__ . '/..');
+        exec('cp -r ' . $path . '/testfiles' . ' ' . $path . '/testfiles_backup');
+    }
+
+    public function tearDown() {
+        // Restore testfiles backup.
+        $path = realpath(__DIR__ . '/..');
+        exec('rm -rf ' . $path . '/testfiles');
+        exec('mv ' . $path . '/testfiles_backup' . ' ' . $path . '/testfiles');
     }
 
     /**
@@ -49,6 +59,7 @@ class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements Cont
         $this->getConfig()->set('digipolis.root.project', realpath(__DIR__ . '/../testfiles'));
         $this->getConfig()->set('digipolis.themes.drupal8', [
             'testtheme' => 'build',
+            'testtheme_source' => 'build',
             'custom' => 'build',
         ]);
         $compileResult = $this->taskThemesCompileDrupal8()
@@ -74,5 +85,7 @@ class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements Cont
           $this->assertFileNotExists($themePath . '/node_modules');
         }
 
+        // Assert cleanup of source dir.
+        $this->assertFileNotExists(realpath(__DIR__ . '/../testfiles/themes/testtheme_source') . '/source');
     }
 }

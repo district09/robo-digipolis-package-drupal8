@@ -106,8 +106,27 @@ class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
         }
         $collection = $this->collectionBuilder();
         foreach ($this->getThemePaths(array_keys($themes)) as $themeName => $path) {
-            $command = $themes[$themeName];
-            $collection->addTask($this->taskThemeCompile($path, $command));
+            $themeSettings = isset($themes[$themeName])
+                ? $themes[$themeName]
+                : [];
+            if (is_string($themeSettings)) {
+                // Backward compatibility.
+                $themeSettings = ['command' => $themeSettings];
+            }
+            $themeSettings = array_merge(
+                ['command' => 'build', 'sourcedir' => 'source'],
+                $themeSettings
+            );
+            $dir = $path;
+            if ($themeSettings['sourcedir'] && is_dir($path . '/' . $themeSettings['sourcedir'])) {
+                $dir = $path . '/' . $themeSettings['sourcedir'];
+            }
+            $collection->addTask(
+                $this->taskThemeCompile(
+                    $dir,
+                    $themeSettings['command']
+                )
+            );
         }
         return $collection->run();
     }
