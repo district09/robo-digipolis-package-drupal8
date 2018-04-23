@@ -37,7 +37,7 @@ class PackageDrupal8 extends PackageProject
         $folders = new Finder();
         $folders->in($this->tmpDir);
         $folders->depth(0);
-        $folders->notPath('/^(web|vendor|config|RoboFile\.php|properties\.yml|composer\.json)$/');
+        $folders->notPath('/^(web|vendor|config|RoboFile\.php|properties\.yml|load\.environment\.php|composer\.json)$/');
         $folders->ignoreDotFiles(false);
         $this->fs->remove($folders);
 
