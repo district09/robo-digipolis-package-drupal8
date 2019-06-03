@@ -25,6 +25,8 @@ class PackageDrupal8 extends PackageProject
         'INSTALL.txt',
         'MAINTAINERS.txt',
         'UPDATE.txt',
+        'install.php',
+        'update.php',
     ];
 
     /**
