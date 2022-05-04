@@ -9,8 +9,8 @@ use Symfony\Component\Finder\Finder;
 class ThemesCleanDrupal8 extends BaseTask implements BuilderAwareInterface
 {
     use \Robo\TaskAccessor;
-    use \DigipolisGent\Robo\Task\Package\loadTasks;
-    use \Robo\Task\Filesystem\loadTasks;
+    use \DigipolisGent\Robo\Task\Package\Tasks;
+    use \Robo\Task\Filesystem\Tasks;
     use Utility\ThemeFinder;
 
     /**
