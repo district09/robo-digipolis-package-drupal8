@@ -9,7 +9,7 @@ use Symfony\Component\Finder\Finder;
 class ThemesCompileDrupal8 extends BaseTask implements BuilderAwareInterface
 {
     use \Robo\TaskAccessor;
-    use \DigipolisGent\Robo\Task\Package\loadTasks;
+    use \DigipolisGent\Robo\Task\Package\Tasks;
     use Utility\ThemeFinder;
 
     /**
