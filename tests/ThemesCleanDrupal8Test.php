@@ -4,26 +4,28 @@ namespace DigipolisGent\Tests\Robo\Task\Package;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
+use PHPUnit\Framework\TestCase;
+use Robo\Collection\CollectionBuilder;
 use Robo\Common\CommandArguments;
+use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\TaskAccessor;
 use Symfony\Component\Console\Output\NullOutput;
 
-class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements ContainerAwareInterface, ConfigAwareInterface
+class ThemesCleanDrupal8Test extends TestCase implements ContainerAwareInterface, ConfigAwareInterface
 {
 
-    use \DigipolisGent\Robo\Task\Package\Drupal8\loadTasks;
+    use \DigipolisGent\Robo\Task\Package\Drupal8\Tasks;
     use TaskAccessor;
     use ContainerAwareTrait;
     use CommandArguments;
-    use \Robo\Task\Base\loadTasks;
+    use \Robo\Task\Base\Tasks;
     use \Robo\Common\ConfigAwareTrait;
 
     /**
      * Set up the Robo container so that we can create tasks in our tests.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $container = Robo::createDefaultContainer(null, new NullOutput());
         $this->setContainer($container);
@@ -33,7 +35,8 @@ class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements Cont
         exec('cp -r ' . $path . '/testfiles' . ' ' . $path . '/testfiles_backup');
     }
 
-    public function tearDown() {
+    public function tearDown(): void
+    {
         // Restore testfiles backup.
         $path = realpath(__DIR__ . '/..');
         exec('rm -rf ' . $path . '/testfiles');
@@ -50,8 +53,7 @@ class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements Cont
     {
         $emptyRobofile = new \Robo\Tasks();
 
-        return $this->getContainer()
-            ->get('collectionBuilder', [$emptyRobofile]);
+        return CollectionBuilder::create($this->getContainer(), $emptyRobofile);
     }
 
     public function testRun()
@@ -82,10 +84,10 @@ class ThemesCleanDrupal8Test extends \PHPUnit_Framework_TestCase implements Cont
         ];
         foreach ($themePaths as $themePath) {
           // Assert cleanup of npm files.
-          $this->assertFileNotExists($themePath . '/node_modules');
+          $this->assertFileDoesNotExist($themePath . '/node_modules');
         }
 
         // Assert cleanup of source dir.
-        $this->assertFileNotExists(realpath(__DIR__ . '/../testfiles/themes/testtheme_source') . '/source');
+        $this->assertFileDoesNotExist(realpath(__DIR__ . '/../testfiles/themes/testtheme_source') . '/source');
     }
 }

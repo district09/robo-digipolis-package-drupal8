@@ -2,7 +2,7 @@
 
 namespace DigipolisGent\Robo\Task\Package\Drupal8;
 
-trait loadTasks
+trait Tasks
 {
     use Traits\PackageDrupal8Trait;
     use Traits\ThemesCompileDrupal8Trait;
